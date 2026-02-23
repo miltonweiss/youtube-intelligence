@@ -16,6 +16,17 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+### Environment (playlist API)
+
+For the playlist route (YouTube Data API v3), add to `.env` (or `.env.local`):
+
+- `YOUTUBE_API_KEY` or `GOOGLE_API_KEY` – your [YouTube Data API v3](https://developers.google.com/youtube/v3/getting-started) key (create one in Google Cloud Console, enable “YouTube Data API v3”).
+
+### API routes
+
+- **Playlist video IDs** – `GET /api/playlist?url=<playlist_url>` or `?playlistId=<id>`  
+  Returns `{ videoIds: string[], totalResults: number }`. Uses YouTube Data API v3; requires the API key above.
+
 You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

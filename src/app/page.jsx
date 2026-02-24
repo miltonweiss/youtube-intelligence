@@ -27,7 +27,7 @@ export default function Home() {
     <div className="foreground flex w-[95vw] h-[95vh] max-h-[90vh]   borderDefault flex-col items-center px-5">
       {/* Hero */}
       <div className="flex flex-col items-center pt-[min(14vh,120px)] pb-6 w-full max-w-[640px]">
-      <a href="https://www.github.com/miltonweiss" target="_blank" className="border-none">
+      <a href="https://github.com/miltonweiss/youtube-intelligence" target="_blank" className="border-none">
             
         <div
           className="accent-bg hover:opacity-80 active:scale-90 transition-all duration-200 w-12 h-12 flex items-center justify-center mb-7"

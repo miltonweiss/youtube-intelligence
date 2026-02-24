@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function getYouTubeVideoId(url) {
   const match = url.match(
@@ -9,11 +9,34 @@ function getYouTubeVideoId(url) {
 }
 
 export default function TranscriptPageContent() {
-  const [videoUrl, setVideoUrl] = useState("");
-  const [transcript, setTranscript] = useState(null);
+  const [videoUrl, setVideoUrl] = useState(() => {
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem("single_videoUrl") || "";
+    }
+    return "";
+  });
+  const [transcript, setTranscript] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = sessionStorage.getItem("single_transcript");
+      return saved ? JSON.parse(saved) : null;
+    }
+    return null;
+  });
   const [loading, setLoading] = useState(false);
   const [inputFocused, setInputFocused] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    sessionStorage.setItem("single_videoUrl", videoUrl);
+  }, [videoUrl]);
+
+  useEffect(() => {
+    if (transcript === null) {
+      sessionStorage.removeItem("single_transcript");
+    } else {
+      sessionStorage.setItem("single_transcript", JSON.stringify(transcript));
+    }
+  }, [transcript]);
   
 
   function fetchTranscript(videoId) {
@@ -66,14 +89,14 @@ export default function TranscriptPageContent() {
   }
 
   return (
-    <div className="background flex flex-col min-h-screen items-center px-5">
+    <div className=" flex flex-col  items-center px-5 w-full ">
 
       
 
       {/* Input card */}
       <form onSubmit={handleSubmit} className="w-full max-w-[640px]">
         <div
-          className="foreground transition-all duration-200"
+          className="foreforeground borderDefault transition-all duration-200"
           style={{
             borderRadius: 14,
             padding: 6,
@@ -154,7 +177,7 @@ export default function TranscriptPageContent() {
       {!loading && transcript && (
         <div className="w-full max-w-[640px] mt-6" style={{ animation: "fadeUp 0.35s ease-out" }} key={Date.now()}>
           <div
-            className="foreground overflow-hidden"
+            className="foreground "
             style={{ borderRadius: 14, border: "1.5px solid var(--border-default)" }}
           >
             {hasTranscriptText ? (
@@ -193,7 +216,7 @@ export default function TranscriptPageContent() {
                   </button>
                 </div>
 
-                <div className="px-5 py-5 overflow-y-auto" style={{ maxHeight: 400 }}>
+                <div className="px-5 py-5">
                   <p style={{ fontSize: "0.9rem", lineHeight: 1.75, color: "var(--text-secondary)", whiteSpace: "pre-wrap" }}>
                     {transcriptText}
                   </p>

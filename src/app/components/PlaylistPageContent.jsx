@@ -1,20 +1,54 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import GridComponent from "./grid";
 
+function ssGet(key, fallback) {
+  if (typeof window === "undefined") return fallback;
+  const val = sessionStorage.getItem(key);
+  if (val === null) return fallback;
+  try { return JSON.parse(val); } catch { return fallback; }
+}
+
 export default function PlaylistPageContent() {
-  const [playlistUrl, setPlaylistUrl] = useState("");
-  const [playlistResult, setPlaylistResult] = useState(null);
-  const [count, setCount] = useState(0);
+  const [playlistUrl, setPlaylistUrl] = useState(() => ssGet("playlist_url", ""));
+  const [playlistResult, setPlaylistResult] = useState(() => ssGet("playlist_result", null));
+  const [count, setCount] = useState(() => ssGet("playlist_count", 0));
   const [playlistLoading, setPlaylistLoading] = useState(false);
   const [inputFocused, setInputFocused] = useState(false);
-  const [videoTranscriptPairs, setVideoTranscriptPairs] = useState([]);
+  const [videoTranscriptPairs, setVideoTranscriptPairs] = useState(() => ssGet("playlist_pairs", []));
+  const [ingestStatus, setIngestStatus] = useState(() => ssGet("playlist_ingestStatus", {}));
+
+  useEffect(() => {
+    sessionStorage.setItem("playlist_url", JSON.stringify(playlistUrl));
+  }, [playlistUrl]);
+
+  useEffect(() => {
+    if (playlistResult === null) sessionStorage.removeItem("playlist_result");
+    else sessionStorage.setItem("playlist_result", JSON.stringify(playlistResult));
+  }, [playlistResult]);
+
+  useEffect(() => {
+    sessionStorage.setItem("playlist_count", JSON.stringify(count));
+  }, [count]);
+
+  useEffect(() => {
+    sessionStorage.setItem("playlist_pairs", JSON.stringify(videoTranscriptPairs));
+  }, [videoTranscriptPairs]);
+
+  useEffect(() => {
+    sessionStorage.setItem("playlist_ingestStatus", JSON.stringify(ingestStatus));
+  }, [ingestStatus]);
 
   function fetchPlaylist() {
     setCount(0);
     if (!playlistUrl.trim()) return;
     setPlaylistResult(null);
     setVideoTranscriptPairs([]);
+    setIngestStatus({});
+    sessionStorage.removeItem("playlist_result");
+    sessionStorage.removeItem("playlist_pairs");
+    sessionStorage.removeItem("playlist_ingestStatus");
+    sessionStorage.setItem("playlist_count", JSON.stringify(0));
     setPlaylistLoading(true);
     fetch(`/api/playlist?playlistId=${playlistUrl}`)
       .then((res) => res.json())
@@ -38,6 +72,32 @@ export default function PlaylistPageContent() {
                 next[index] = [videoId, transcriptData];
                 return next;
               });
+
+              // Only ingest if we got a valid transcript array
+              if (!Array.isArray(transcriptData) || transcriptData.length === 0) return;
+
+              const transcriptText = transcriptData.map((item) => item.text).join(" ");
+              setIngestStatus((prev) => ({ ...prev, [videoId]: "saving" }));
+
+              fetch("/api/ingest", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ videoId, transcript: transcriptText }),
+              })
+                .then((res) => res.json())
+                .then((ingestData) => {
+                  if (ingestData.error) {
+                    setIngestStatus((prev) => ({ ...prev, [videoId]: "error" }));
+                  } else {
+                    setIngestStatus((prev) => ({
+                      ...prev,
+                      [videoId]: `done:${ingestData.chunksCreated}`,
+                    }));
+                  }
+                })
+                .catch(() => {
+                  setIngestStatus((prev) => ({ ...prev, [videoId]: "error" }));
+                });
             })
             .catch(() => {
               setVideoTranscriptPairs((prev) => {
@@ -75,7 +135,7 @@ export default function PlaylistPageContent() {
       {/* Input */}
       <form onSubmit={handlePlaylistSubmit}>
         <div
-          className="foreground transition-all duration-200"
+          className="foreforeground borderDefault transition-all duration-200"
           style={{
             borderRadius: 14,
             padding: 6,

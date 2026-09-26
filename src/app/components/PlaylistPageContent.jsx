@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import GridComponent from "./grid";
+import { indexVideo } from "@/lib/storage/indexVideo";
 
 function ssGet(key, fallback) {
   if (typeof window === "undefined") return fallback;
@@ -73,25 +74,20 @@ export default function PlaylistPageContent() {
                 return next;
               });
 
-              // Only ingest if we got a valid transcript array
+              // Index and save video + chunks to IndexedDB
               if (!Array.isArray(transcriptData) || transcriptData.length === 0) return;
 
               const transcriptText = transcriptData.map((item) => item.text).join(" ");
               setIngestStatus((prev) => ({ ...prev, [videoId]: "saving" }));
 
-              fetch("/api/ingest", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ videoId, transcript: transcriptText }),
-              })
-                .then((res) => res.json())
-                .then((ingestData) => {
-                  if (ingestData.error) {
+              indexVideo({ videoId, name: videoId, text: transcriptText })
+                .then((chunksCreated) => {
+                  if (chunksCreated === null) {
                     setIngestStatus((prev) => ({ ...prev, [videoId]: "error" }));
                   } else {
                     setIngestStatus((prev) => ({
                       ...prev,
-                      [videoId]: `done:${ingestData.chunksCreated}`,
+                      [videoId]: `done:${chunksCreated}`,
                     }));
                   }
                 })

@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { indexVideo } from "@/lib/storage/indexVideo";
 
 function getYouTubeVideoId(url) {
   const match = url.match(
@@ -57,6 +58,12 @@ export default function TranscriptPageContent() {
       .then((data) => {
         setTranscript(data);
         setLoading(false);
+        if (Array.isArray(data) && data.length > 0) {
+          const text = data.map((item) => item.text).join(" ");
+          indexVideo({ videoId, name: videoId, text }).catch((err) => {
+            console.error("Failed to index single video transcript:", err);
+          });
+        }
       })
       .catch(() => {
         setTranscript({ message: "Something went wrong. Please try again." });
@@ -196,8 +203,8 @@ export default function TranscriptPageContent() {
                       fontSize: "0.8rem",
                       fontWeight: 500,
                       color: "var(--accent)",
-                      background: "var(--orange-muted)",
-                      border: "1px solid var(--orange-border)",
+                      background: "var(--accent-muted)",
+                      border: "1px solid var(--accent-border)",
                       borderRadius: 8,
                       padding: "5px 12px",
                     }}

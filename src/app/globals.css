@@ -2,7 +2,8 @@
 @plugin "daisyui";
 
 :root {
-  --accent: hsl(18.39, 100%, 60.98%);
+  --accent: hsl(227, 66, 52);
+  --accent-old: hsl(18.39, 100%, 60.98%);
 
   /* Dark mode defaults */
   --background: hsl(0, 0%, 5%);
@@ -15,7 +16,8 @@
   --text-on-accent: hsl(0, 0%, 95%);
   --border-default: hsl(0, 0%, 15%);
   --selection-text: hsl(0, 0%, 95%);
-  --selection-bg: hsl(18.39, 100%, 60.98%);
+  --selection-bg-old: hsl(18.39, 100%, 60.98%);
+  --selection-bg: hsl(227, 66, 52);
 
   --red-muted: hsl(7, 23, 15);
   --red-accent: hsl(5, 76, 64);
@@ -41,9 +43,10 @@
   --orange-accent: hsl(29, 82, 56);
   --orange-border: hsl(28, 33%, 11%);
 
-  --accent: var(--orange-accent);
+  --accent-muted: hsl(227, 43, 14);
+  --accent-border: hsl(227, 43%, 11%);
   --accent-foreground: var(--text-on-accent);
-  --ring: var(--orange-accent);
+  --ring: var(--accent);
 }
 
 
@@ -69,8 +72,8 @@ html[data-theme="light"] {
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-satoshi);
+  --font-mono: var(--font-satoshi);
 }
 
 .background{
@@ -339,12 +342,12 @@ button:hover{
 }
 
 .calendar-nav-button:hover {
-  background-color: hsl(29, 82%, 56%, 0.2) !important;
-  color: var(--orange-accent) !important;
+  background-color: hsl(227, 66%, 52%, 0.2) !important;
+  color: var(--accent) !important;
 }
 
 .calendar-nav-button:hover svg {
-  color: var(--orange-accent) !important;
+  color: var(--accent) !important;
 }
 
 /* Markdown content styles */
@@ -406,7 +409,7 @@ button:hover{
   padding: 0.2em 0.4em;
   border-radius: 4px;
   font-size: 0.9em;
-  font-family: var(--font-mono), monospace;
+  font-family: var(--font-satoshi), sans-serif;
 }
 
 .markdown-content pre {

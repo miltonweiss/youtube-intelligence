@@ -4,6 +4,7 @@ import { DefaultChatTransport } from "ai";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { CHAT_RAG_API } from "@/lib/chat";
+import { retrieveChunks } from "@/lib/ai/retrieve";
 
 // Parses [Source X] references in text and replaces them with interactive chips
 function RagMarkdown({ content, ragChunks }) {
@@ -138,12 +139,18 @@ function ChatAppInner({ initialMessages }) {
 
   const isStreaming = status === "streaming" || status === "submitted";
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e?.preventDefault?.();
     const text = (input ?? "").trim();
     if (!text || isStreaming) return;
-    sendMessage({ text });
     setInput("");
+    try {
+      const ragChunks = await retrieveChunks(text, { topK: 3 });
+      sendMessage({ text }, { body: { ragChunks } });
+    } catch (err) {
+      console.error("[Chat] Retrieval error:", err);
+      sendMessage({ text });
+    }
   };
 
   // Extract RAG chunks from each assistant message's data parts

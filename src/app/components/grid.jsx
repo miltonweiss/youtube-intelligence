@@ -81,7 +81,7 @@ function VideoRow({ videoId, transcript, index }) {
               fontWeight: 500,
               color: "var(--text-primary)",
               textDecoration: "none",
-              fontFamily: "monospace",
+              fontFamily: "var(--font-satoshi), sans-serif",
             }}
           >
             {videoId}
@@ -112,8 +112,8 @@ function VideoRow({ videoId, transcript, index }) {
                   fontSize: "0.75rem",
                   fontWeight: 500,
                   color: "var(--accent)",
-                  background: "var(--orange-muted)",
-                  border: "1px solid var(--orange-border)",
+                  background: "var(--accent-muted)",
+                  border: "1px solid var(--accent-border)",
                   borderRadius: 6,
                   padding: "3px 10px",
                   cursor: "pointer",
@@ -241,8 +241,8 @@ function GridComponent({ data, count, setCount }) {
               fontSize: "0.8rem",
               fontWeight: 500,
               color: "var(--accent)",
-              background: "var(--orange-muted)",
-              border: "1px solid var(--orange-border)",
+              background: "var(--accent-muted)",
+              border: "1px solid var(--accent-border)",
               borderRadius: 8,
               padding: "5px 12px",
               cursor: "pointer",

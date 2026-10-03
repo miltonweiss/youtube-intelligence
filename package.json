@@ -1,5 +1,5 @@
 {
-  "name": "youtube-transcript",
+  "name": "read-the-video",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,24 +9,21 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@ai-sdk/mistral": "^3.0.0",
-    "@ai-sdk/react": "^3.0.99",
-    "@danielxceron/youtube-transcript": "^1.2.6",
-    "@langchain/core": "^1.1.27",
-    "@langchain/textsplitters": "^1.0.1",
-    "idb-keyval": "^6.2.1",
-    "ai": "^6.0.97",
+    "@heroui/react": "^3.2.6",
+    "@heroui/styles": "^3.2.6",
+    "framer-motion": "^13.4.4",
     "gridjs": "^6.2.0",
+    "idb-keyval": "^6.2.1",
+    "lucide-react": "^1.48.0",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-markdown": "^10.1.0",
+    "youtube-transcript-plus": "^2.0.3",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "babel-plugin-react-compiler": "1.0.0",
-    "daisyui": "^5.5.18",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4"

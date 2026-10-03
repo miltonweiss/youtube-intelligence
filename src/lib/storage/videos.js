@@ -43,12 +43,25 @@ export async function createYoutubeVideo(video) {
     const videoId = video.videoId || video.id || video.name
     if (!videoId) return null
 
+    const existing = await get(videoId, store)
+    const now = new Date().toISOString()
+
     const record = {
       id: videoId,
-      videoId: videoId,
-      name: video.name || videoId,
-      text: video.text || video.fileContent || '',
-      createdAt: new Date().toISOString(),
+      videoId,
+      title: video.title || existing?.title || video.name || videoId,
+      author: video.author || existing?.author || '',
+      thumbnailUrl:
+        video.thumbnailUrl ||
+        existing?.thumbnailUrl ||
+        `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+      segments: Array.isArray(video.segments)
+        ? video.segments
+        : existing?.segments || [],
+      text: video.text || video.fileContent || existing?.text || '',
+      playlistId: video.playlistId || existing?.playlistId || null,
+      createdAt: existing?.createdAt || now,
+      updatedAt: now,
     }
 
     await set(videoId, record, store)

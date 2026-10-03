@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3'
 
@@ -58,6 +59,14 @@ async function fetchPlaylistItemsPage(apiKey, playlistId, pageToken = null) {
  * Requires env: YOUTUBE_API_KEY (or GOOGLE_API_KEY).
  */
 export async function GET(request) {
+  const rateCheck = checkRateLimit(request, { limit: 30, windowMs: 60 * 1000 })
+  if (!rateCheck.success) {
+    return NextResponse.json(
+      { message: `Too many requests. Please try again in ${rateCheck.resetInSeconds} seconds.` },
+      { status: 429 }
+    )
+  }
+
   const url = request.url
   const { searchParams } = new URL(url)
   const playlistUrlOrId = searchParams.get('url') || searchParams.get('playlistId')
